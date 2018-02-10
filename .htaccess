@@ -1,0 +1,15 @@
+RewriteEngine Off
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $.php
+
+RewriteRule ^highscores/player/id/([\d]+)$ highscores/player/index.php?id=$1
+RewriteRule ^highscores/player/id/([\d]+)/$ highscores/player/index.php?id=$1
+RewriteRule ^highscores/player/id/([\d]+)/skill/([\w]+)$ highscores/player/index.php?id=$1&skill=$2
+RewriteRule ^highscores/player/id/([\d]+)/skill/([\w]+)/$ highscores/player/index.php?id=$1&skill=$2
+
+RewriteRule ^highscores/player/name/([\w]+)$ highscores/player/index.php?name=$1
+RewriteRule ^highscores/player/name/([\w]+)/$ highscores/player/index.php?name=$1
+RewriteRule ^highscores/player/name/([\w]+)/skill/([\w]+)$ highscores/player/index.php?name=$1&skill=$2
+RewriteRule ^highscores/player/name/([\w]+)/skill/([\w]+)/$ highscores/player/index.php?name=$1&skill=$2
