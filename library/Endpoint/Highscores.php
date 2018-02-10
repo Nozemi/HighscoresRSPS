@@ -61,23 +61,7 @@ class Highscores extends AbstractEndpoint {
                         echo $error->getMessage();
                     }
                 } else {
-                    $playerArray = [
-                        'id' => $player->getId(),
-                        'name' => $player->getName(),
-                        'combat' => $player->getCombat(),
-                        'totalLevel' => $player->getTotalLevel(),
-                        'totalExperience' => $player->getTotalExperience()
-                    ];
-
-                    foreach ($player->getSkills() as $skill) {
-                        /** @var Skill $skill */
-                        $playerArray['skills'][$skill->getName()] = $skill->getInfo();
-                    }
-
-                    /*echo json_encode([
-                        'responseCode' => 200,
-                        'data' => $playerArray
-                    ], JSON_PRETTY_PRINT);*/
+                    $playerArray = $player->getInfo();
                     $data = new JsonData(200, 'Successfully got player data.', $playerArray);
                     echo $data->getMessage();
                 }

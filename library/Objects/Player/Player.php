@@ -226,4 +226,23 @@ class Player {
 
         return false;
     }
+
+    public function getInfo() {
+        $infoArray = [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'combat' => $this->getCombat(),
+            'totalLevel' => $this->getTotalLevel(),
+            'totalExperience' => $this->getTotalExperience()
+        ];
+
+        foreach ($this->getSkills() as $skill) {
+            /** @var Skill $skill */
+            $infoArray['skills'][$skill->getName()] = $skill->getInfo();
+        }
+
+        return [
+            'player' => $infoArray
+        ];
+    }
 }
