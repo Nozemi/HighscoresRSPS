@@ -1,10 +1,15 @@
 <?php
 namespace Objects\Player;
 
+use Database\DBUtilQuery;
+
+use \PDO;
+
 class Skill {
     protected $name;
     protected $level;
     protected $experience;
+    protected $rank;
 
     public function __construct($name = null) {
         $this->name = $name;
@@ -31,6 +36,7 @@ class Skill {
 
     /**
      * @param null $experience
+     * @return Skill
      * @throws \Exception
      */
     public function setLevelFromExperience($experience = null) {
@@ -56,6 +62,21 @@ class Skill {
         }
 
         $this->level = $playerLevel;
+        return $this;
+    }
+
+    /**
+     * @param $rank
+     * @return $this
+     * @throws \Exception
+     */
+    public function setRank($rank) {
+        if(!is_int($rank)) {
+            throw new \Exception('Parameter $rank needs to be an integer');
+        }
+
+        $this->rank = $rank;
+        return $this;
     }
 
     /**
@@ -84,11 +105,62 @@ class Skill {
         return $this->experience;
     }
 
+    public function getRank() {
+        return $this->rank;
+    }
+
+    /**
+     * @param Player|null $player
+     * @return $this
+     * @throws \Exception
+     */
+    public function getRankFromDb(Player $player = null) {
+        $query = new DBUtilQuery();
+
+        $query->setName('skillRank')
+            ->addParameter(':experience', $this->getExperience(), PDO::PARAM_INT)
+            ->setDBUtil($GLOBALS['db'])
+            ->setMultipleRows();
+
+        if($player instanceof Player) {
+            $query->setQuery("
+                SELECT
+                      COUNT(*) `rank`
+                     ,(
+                        SELECT
+                          `rights`
+                        FROM `character_stats`
+                        WHERE `uid` = :uid
+                     ) `rights`
+                FROM `character_stats` `S`
+                WHERE `S`.`{$this->getName()}` >= :experience AND `S`.`rights` < 2
+            ")
+            ->addParameter(':uid', $player->getId(), PDO::PARAM_INT);
+        } else {
+            $query->setQuery("
+                SELECT
+                     COUNT(*) `rank`
+                FROM `character_stats` `S`
+                WHERE `S`.`{$this->getName()}` >= :experience AND `S`.`rights` < 2
+            ");
+        }
+        $query->execute();
+
+        $result = $query->result();
+        $this->setRank((int) $result['rank']);
+
+        if(isset($result['rights']) && ((int) $result['rights'] === 2)) {
+            $this->setRank(-1);
+        }
+
+        return $this;
+    }
+
     public function getInfo($includeName = false) {
         $skillInfo = [
             'level'      => $this->getLevel(),
             'experience' => $this->getExperience(),
-            'rank'       => 'N/A - Not yet implemented.'
+            'rank'       => $this->getRank()
         ];
 
         if($includeName) {

@@ -9,10 +9,26 @@ abstract class AbstractEndpoint {
     }
 
     public function getParameter($index) {
-        return $this->parameters[$index];
+        if(isset($this->parameters[$index])) {
+            return $this->parameters[$index];
+        } else {
+            return false;
+        }
     }
 
     public function getParam($index) {
-        return $this->getParameter($index);
+        return strtolower($this->getParameter($index));
+    }
+
+    public function getRequestParameter($name) {
+        if(isset($_REQUEST[$name])) {
+            return $_REQUEST[$name];
+        } else {
+            return false;
+        }
+    }
+
+    public function getRequest($name) {
+        return $this->getRequestParameter($name);
     }
 }

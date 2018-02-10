@@ -2,6 +2,9 @@
 namespace Utilities;
 
 class JsonData {
+    const ERROR_NOT_FOUND = 404;
+    const SUCCESS = 200;
+
     protected $message;
     protected $responseCode;
     protected $data;

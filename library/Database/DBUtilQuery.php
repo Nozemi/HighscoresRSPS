@@ -1,6 +1,8 @@
 <?php
 namespace Database;
 
+use \PDO;
+
 class DBUtilQuery {
     protected $name;
     protected $query;

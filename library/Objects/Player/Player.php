@@ -5,13 +5,14 @@ use \PDO as PDO;
 
 use Database\DBUtil;
 use Database\DBUtilQuery;
+use Utilities\JsonData;
 
 class Player {
     protected $id;
     protected $name;
     protected $combat;
-    protected $totalLevel;
-    protected $totalExperience;
+    /** @var Total $total */
+    protected $total;
     protected $skills;
 
     public function __construct($id = null, $name = null) {
@@ -52,6 +53,11 @@ class Player {
         return $this;
     }
 
+    public function setTotal(Total $total) {
+        $this->total = $total;
+        return $this;
+    }
+
     /**
      * @param $totalLevel
      * @return $this
@@ -62,7 +68,7 @@ class Player {
             throw new \Exception('Parameter $totalLevel needs to be an integer');
         }
 
-        $this->totalLevel = $totalLevel;
+        //$this->totalLevel = $totalLevel;
         return $this;
     }
 
@@ -76,7 +82,7 @@ class Player {
             throw new \Exception('Parameter $totalExperience needs to be an integer');
         }
 
-        $this->totalExperience = $totalExperience;
+        //$this->totalExperience = $totalExperience;
         return $this;
     }
 
@@ -98,11 +104,19 @@ class Player {
     }
 
     public function getTotalLevel() {
-        return $this->totalLevel;
+        return [
+            'value'         => $this->total->getLevel(),
+            'rank'          => $this->total->getLevelRank(),
+            'skillerRank'   => $this->total->getLevelRankSkiller()
+        ];
     }
 
     public function getTotalExperience() {
-        return $this->totalExperience;
+        return [
+            'value'         => $this->total->getExperience(),
+            'rank'          => $this->total->getExperienceRank(),
+            'skillerRank'   => $this->total->getExperienceRankSkiller()
+        ];
     }
 
     /**
@@ -155,15 +169,21 @@ class Player {
 
         $result = $db->getResultByName($query->getName());
 
+        if(empty($result)) {
+            $error = new JsonData(JsonData::ERROR_NOT_FOUND, 'Player not found.');
+            echo $error->getMessage();
+            exit;
+        }
+
         $this->setName($result['username'])
             ->setCombat((int) $result['combat'])
-            ->setTotalExperience((int) $result['totalxp'])
-            ->setTotalLevel((int) $result['total']);
+            ->setTotal(new Total($this, $result['totalxp'], $result['total']));
 
         foreach($GLOBALS['skills'] as $skillName) {
             $skill = new Skill($skillName);
             $skill->setExperience((int) $result[$skillName])
-                ->setLevelFromExperience();
+                ->setLevelFromExperience()
+                ->getRankFromDb();
 
             $this->addSkill($skill);
         }
@@ -194,17 +214,21 @@ class Player {
 
         $result = $db->getResultByName($query->getName());
 
-        print_r($result);
+        if(empty($result)) {
+            $error = new JsonData(JsonData::ERROR_NOT_FOUND, 'Player not found.');
+            echo $error->getMessage();
+            exit;
+        }
 
         $this->setId((int) $result['uid'])
             ->setCombat((int) $result['combat'])
-            ->setTotalExperience((int) $result['totalxp'])
-            ->setTotalLevel((int) $result['total']);
+            ->setTotal(new Total($this, $result['totalxp'], $result['total']));
 
         foreach($GLOBALS['skills'] as $skillName) {
             $skill = new Skill($skillName);
             $skill->setExperience((int) $result[$skillName])
-                ->setLevelFromExperience();
+                ->setLevelFromExperience()
+                ->getRankFromDb($this);
 
             $this->addSkill($skill);
         }
@@ -227,18 +251,30 @@ class Player {
         return false;
     }
 
-    public function getInfo() {
+    public function getInfo($getSkills = true) {
         $infoArray = [
-            'id' => $this->getId(),
-            'name' => $this->getName(),
+            'id'     => $this->getId(),
+            'name'   => $this->getName(),
             'combat' => $this->getCombat(),
-            'totalLevel' => $this->getTotalLevel(),
-            'totalExperience' => $this->getTotalExperience()
+            'total'  => [
+                'level' => [
+                    'value'       => $this->total->getLevel(),
+                    'rank'        => $this->total->getLevelRank(),
+                    'skillerRank' => $this->total->getLevelRankSkiller()
+                ],
+                'experience' => [
+                    'value'       => $this->total->getExperience(),
+                    'rank'        => $this->total->getExperienceRank(),
+                    'skillerRank' => $this->total->getExperienceRankSkiller()
+                ]
+            ]
         ];
 
-        foreach ($this->getSkills() as $skill) {
-            /** @var Skill $skill */
-            $infoArray['skills'][$skill->getName()] = $skill->getInfo();
+        if($getSkills) {
+            foreach ($this->getSkills() as $skill) {
+                /** @var Skill $skill */
+                $infoArray['skills'][$skill->getName()] = $skill->getInfo();
+            }
         }
 
         return [
