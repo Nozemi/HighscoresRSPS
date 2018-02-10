@@ -1,4 +1,7 @@
 <?php
+namespace Database;
+
+use \PDO as PDO;
 
 class DBUtil {
     const MySQL       = 0;
@@ -34,8 +37,8 @@ class DBUtil {
             }
 
             if (!$this->isValid()) {
-                //new Logger('Invalid database details', Logger::ERROR, __CLASS__, __LINE__);
-                throw new DBUtilException('Invalid database details.');
+                //new Logger('Invalid Database details', Logger::ERROR, __CLASS__, __LINE__);
+                throw new DBUtilException('Invalid Database details.');
             }
 
             $this->initialize();
@@ -61,7 +64,7 @@ class DBUtil {
                 break;
             default:
                 //new Logger('The type is not yet supported.', Logger::ERROR, __CLASS__, __LINE__);
-                throw new DBUtilException('Unsupported database type.');
+                throw new DBUtilException('Unsupported Database type.');
                 break;
         }
     }

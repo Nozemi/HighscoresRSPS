@@ -1,4 +1,5 @@
 <?php
+namespace Objects\Player;
 
 class Skill {
     protected $name;
@@ -17,11 +18,11 @@ class Skill {
     /**
      * @param $level
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function setLevel($level) {
         if(!is_int($level)) {
-            throw new Exception('Parameter $level needs to be an integer');
+            throw new \Exception('Parameter $level needs to be an integer');
         }
 
         $this->level = $level;
@@ -30,11 +31,11 @@ class Skill {
 
     /**
      * @param null $experience
-     * @throws Exception
+     * @throws \Exception
      */
     public function setLevelFromExperience($experience = null) {
         if($this->experience === null && $experience === null) {
-            throw new Exception('Failed to get level from experience. Looks like experience is missing.');
+            throw new \Exception('Failed to get level from experience. Looks like experience is missing.');
         }
 
         if($experience === null) {
@@ -60,11 +61,11 @@ class Skill {
     /**
      * @param $experience
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function setExperience($experience) {
         if(!is_int($experience)) {
-            throw new Exception('Parameter $experience needs to be an integer');
+            throw new \Exception('Parameter $experience needs to be an integer');
         }
 
         $this->experience = $experience;
@@ -81,5 +82,21 @@ class Skill {
 
     public function getExperience() {
         return $this->experience;
+    }
+
+    public function getInfo($includeName = false) {
+        $skillInfo = [
+            'level'      => $this->getLevel(),
+            'experience' => $this->getExperience(),
+            'rank'       => 'N/A - Not yet implemented.'
+        ];
+
+        if($includeName) {
+            $skillInfo = array_merge([
+                'name' => $this->getName()
+            ], $skillInfo);
+        }
+
+        return $skillInfo;
     }
 }

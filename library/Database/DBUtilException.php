@@ -1,5 +1,7 @@
 <?php
 
+namespace Database;
+
 class DBUtilException extends \Exception {
 
     public function __construct($message = "", $code = 0, Throwable $previous = null) {

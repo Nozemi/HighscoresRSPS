@@ -1,4 +1,10 @@
 <?php
+namespace Objects\Player;
+
+use \PDO as PDO;
+
+use Database\DBUtil;
+use Database\DBUtilQuery;
 
 class Player {
     protected $id;
@@ -16,11 +22,11 @@ class Player {
     /**
      * @param $id
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function setId($id) {
         if(!is_int($id)) {
-            throw new Exception('Parameter $id needs to be an integer');
+            throw new \Exception('Parameter $id needs to be an integer');
         }
 
         $this->id = $id;
@@ -35,11 +41,11 @@ class Player {
     /**
      * @param $combat
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function setCombat($combat) {
         if(!is_int($combat)) {
-            throw new Exception('Parameter $combat needs to be an integer');
+            throw new \Exception('Parameter $combat needs to be an integer');
         }
 
         $this->combat = $combat;
@@ -49,11 +55,11 @@ class Player {
     /**
      * @param $totalLevel
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function setTotalLevel($totalLevel) {
         if(!is_int($totalLevel)) {
-            throw new Exception('Parameter $totalLevel needs to be an integer');
+            throw new \Exception('Parameter $totalLevel needs to be an integer');
         }
 
         $this->totalLevel = $totalLevel;
@@ -63,11 +69,11 @@ class Player {
     /**
      * @param $totalExperience
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function setTotalExperience($totalExperience) {
         if(!is_int($totalExperience)) {
-            throw new Exception('Parameter $totalExperience needs to be an integer');
+            throw new \Exception('Parameter $totalExperience needs to be an integer');
         }
 
         $this->totalExperience = $totalExperience;
@@ -103,11 +109,11 @@ class Player {
      * @param null $id
      * @param null $name
      * @return Player
-     * @throws Exception
+     * @throws \Exception
      */
     public static function getPlayerFromDatabase($id = null, $name = null) {
         if($id === null && $name == null) {
-            throw new Exception('Either $id or $name needs to be provided');
+            throw new \Exception('Either $id or $name needs to be provided');
         }
 
         $player = new Player();
@@ -129,7 +135,7 @@ class Player {
     /**
      * @param DBUtil $db
      * @return Player
-     * @throws Exception
+     * @throws \Exception
      */
     public function getPlayerById(DBUtil $db) {
         $query = new DBUtilQuery();
@@ -165,6 +171,11 @@ class Player {
         return $this;
     }
 
+    /**
+     * @param DBUtil $db
+     * @return $this
+     * @throws \Exception
+     */
     public function getPlayerByName(DBUtil $db) {
         $query = new DBUtilQuery();
         $query->setName('getPlayerById')
@@ -182,6 +193,8 @@ class Player {
             ->execute();
 
         $result = $db->getResultByName($query->getName());
+
+        print_r($result);
 
         $this->setId((int) $result['uid'])
             ->setCombat((int) $result['combat'])

@@ -1,4 +1,5 @@
 <?php
+namespace Database;
 
 class DBUtilQuery {
     protected $name;
