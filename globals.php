@@ -28,6 +28,7 @@
             $autoLoader = findFile($autoLoader, 5);
 
             if(!$autoLoader) {
+                // TODO: Use JsonData message
                 die("Failed to find autoloader");
             }
 
@@ -40,7 +41,8 @@
     try {
         $database = new DBUtil($GLOBALS['dbDetails']);
     } catch(DBUtilException $ex) {
-        die($ex->getMessage());
+        // TODO: Use JsonData message
+        //die($ex->getMessage());
     }
 
     $GLOBALS['db'] = $database;

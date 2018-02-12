@@ -74,7 +74,7 @@ class DBUtilQuery {
         if($this->db_util instanceof DBUtil) {
             $this->db_util->runQuery($this);
         } else {
-            new Logger('You need to provide the DBUtil class in order to execute the query.', Logger::WARNING, __FILE__, __LINE__);
+            //new Logger('You need to provide the DBUtil class in order to execute the query.', Logger::WARNING, __FILE__, __LINE__);
             return false;
         }
 
@@ -85,7 +85,7 @@ class DBUtilQuery {
         if($this->db_util instanceof DBUtil) {
             return $this->db_util->getResultByName($this->getName());
         } else {
-            new Logger('You need to provide the DBUtil class in order to execute the query.', Logger::WARNING, __FILE__, __LINE__);
+            //new Logger('You need to provide the DBUtil class in order to execute the query.', Logger::WARNING, __FILE__, __LINE__);
             return false;
         }
     }

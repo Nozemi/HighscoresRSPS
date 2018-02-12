@@ -31,6 +31,7 @@
     if($dbConfig == vBulletin) {
         include(__DIR__ . '/../includes/config.php');
         if (!isset($config['Database']) || !isset($config['MasterServer'])) {
+            // TODO: Use JsonData message
             die('Failed to get vBulletin config.');
         }
 

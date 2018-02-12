@@ -1,6 +1,7 @@
 <?php
 namespace Endpoint;
 
+use Database\DBUtilQuery;
 use Objects\Player\Player;
 use Objects\Player\Skill;
 
@@ -97,9 +98,11 @@ class Highscores extends AbstractEndpoint {
                 $players = $total->getTotal();
 
                 $jsonData = [
-                    'currentPage' => $currentPage,
-                    'playersShown' => (int) $limit,
-                    'orderedBy'    => 'Total ' . ucfirst($type)
+                    'currentPage'     => $currentPage,
+                    'availablePages'  => round(($this->getPlayerAmount() / $limit), 0),
+                    'playersShown'    => (int) $limit,
+                    'orderedBy'       => 'Total ' . ucfirst($type),
+                    'availableSkills' => $GLOBALS['scores']['skills']
                 ];
 
                 foreach($players as $player) {
@@ -123,8 +126,10 @@ class Highscores extends AbstractEndpoint {
 
                 $jsonData = [
                     'currentPage'  => $currentPage,
+                    'availablePages' => round(($this->getPlayerAmount() / $limit), 0),
                     'playersShown' => (int) $limit,
-                    'orderedBy'    => ucfirst($skill->getSkill())
+                    'orderedBy'    => ucfirst($skill->getSkill()),
+                    'availableSkills' => $GLOBALS['scores']['skills']
                 ];
 
                 foreach ($players as $player) {
@@ -210,5 +215,22 @@ class Highscores extends AbstractEndpoint {
         $player->getPlayerByName($GLOBALS['db']);
 
         return $player;
+    }
+
+    public function getPlayerAmount() {
+        $playerAmountQuery = new DBUtilQuery();
+        $playerAmountQuery->setName('playerAmount')
+            ->setMultipleRows(false)
+            ->setQuery("
+                SELECT
+                    COUNT(*) `playerCount`
+                FROM `character_stats` `S`
+                WHERE NOT `S`.`rights` = 2
+            ")
+            ->setDBUtil($GLOBALS['db'])
+            ->execute();
+        $result = $playerAmountQuery->result();
+
+        return $result['playerCount'];
     }
 }
